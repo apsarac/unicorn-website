@@ -8,7 +8,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Add animation to fact cards when they come into view
+// Add scroll-based animations
 const observerOptions = {
     threshold: 0.2
 };
@@ -16,18 +16,57 @@ const observerOptions = {
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
+            entry.target.classList.add('fade-in');
         }
     });
 }, observerOptions);
 
-document.querySelectorAll('.fact-card').forEach(card => {
-    card.style.opacity = '0';
-    card.style.transform = 'translateY(20px)';
-    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-    observer.observe(card);
+// Observe sections for animation
+document.querySelectorAll('.section').forEach(section => {
+    section.style.opacity = '0';
+    section.style.transform = 'translateY(20px)';
+    section.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(section);
 });
+
+// Add active state to navigation items
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('nav a');
+
+window.addEventListener('scroll', () => {
+    let current = '';
+    
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        
+        if (window.pageYOffset >= sectionTop - 60) {
+            current = section.getAttribute('id');
+        }
+    });
+    
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href').substring(1) === current) {
+            link.classList.add('active');
+        }
+    });
+});
+
+// Add CSS class for fade-in animation
+const style = document.createElement('style');
+style.textContent = `
+    .fade-in {
+        opacity: 1 !important;
+        transform: translateY(0) !important;
+    }
+    
+    nav a.active {
+        color: var(--shopify-green);
+        font-weight: 600;
+    }
+`;
+document.head.appendChild(style);
 
 // Handle contact form submission
 const contactForm = document.getElementById('contact-form');
